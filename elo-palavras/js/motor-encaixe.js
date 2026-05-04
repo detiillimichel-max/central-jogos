@@ -1,24 +1,39 @@
 // motor-encaixe.js
-// Motor real: calcula posições, interseções e distribui as palavras.
+// Gerenciador de Fases e Lógica de Distribuição
 
 const configJogo = {
-    linhas: 10,
-    colunas: 10,
-    palavras: ["ZECOLMEIA", "BOBIFILHO", "NOSTALGIA", "CINEMA", "PIPOCA"]
+    linhas: 10, colunas: 10,
+    // As 10 fases do jogo - Temas Nostálgicos
+    fases: [
+        ["ZECOLMEIA", "BOBIFILHO", "NOSTALGIA", "CINEMA", "PIPOCA"], // Fase 1
+        ["BATMAN", "CORINGA", "GOTHAM", "HEROI", "CAPA"],            // Fase 2
+        ["PICAPAU", "LEONCIO", "ARVORE", "MADEIRA", "PENAS"],       // Fase 3
+        ["CHAVES", "KIKO", "CHIQUINHA", "MADRUGA", "BARRIL"],        // Fase 4
+        ["MARIO", "LUIGI", "COGUMELO", "PRINCESA", "CASTELO"],       // Fase 5
+        ["MATRIX", "NEO", "TRINITY", "MORPHEUS", "ORACULO"],         // Fase 6
+        ["TOYSTORY", "WOODY", "BUZZ", "ANDY", "BRINQUEDO"],          // Fase 7
+        ["HARRY", "RONY", "HERMIONE", "MAGIA", "VARINHA"],           // Fase 8
+        ["STARWARS", "JEDI", "VADER", "SABRE", "YODA"],              // Fase 9
+        ["VINGADORES", "STARK", "THOR", "HULK", "THANOS"]            // Fase 10
+    ]
 };
 
+let faseAtual = 0;
 let gradeMatematica = [];
 
 function inicializarMotor() {
-    // 1. Cria a grade vazia preenchida com espaços em branco
+    // Cria grade limpa
     gradeMatematica = Array(configJogo.linhas).fill(null).map(() => Array(configJogo.colunas).fill(''));
     
-    // 2. Tenta colocar cada palavra na grade
-    for (const palavra of configJogo.palavras) {
+    // Puxa as palavras da fase atual
+    const palavrasDaFase = configJogo.fases[faseAtual];
+    
+    // Tenta encaixar cada uma
+    for (const palavra of palavrasDaFase) {
         colocarPalavraNaGrade(palavra);
     }
     
-    // 3. Preenche os espaços que sobraram com letras aleatórias
+    // Preenche o resto com letras aleatórias
     const alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     for (let l = 0; l < configJogo.linhas; l++) {
         for (let c = 0; c < configJogo.colunas; c++) {
@@ -34,69 +49,48 @@ function colocarPalavraNaGrade(palavra) {
     let colocada = false;
 
     for (let i = 0; i < maxTentativas; i++) {
-        // Sorteia a direção: 0 para Horizontal, 1 para Vertical
-        const direcao = Math.floor(Math.random() * 2);
+        const direcao = Math.floor(Math.random() * 2); // 0 Horiz, 1 Vert
         let linhaStart = Math.floor(Math.random() * configJogo.linhas);
         let colunaStart = Math.floor(Math.random() * configJogo.colunas);
-
         let cabeECombina = true;
 
-        if (direcao === 0) { // Horizontal
-            // Verifica se a palavra cabe na linha
+        if (direcao === 0) {
             if (colunaStart + palavra.length > configJogo.colunas) continue;
-            
-            // Verifica colisões e cruzamentos perfeitos
             for (let j = 0; j < palavra.length; j++) {
-                const letraAtual = gradeMatematica[linhaStart][colunaStart + j];
-                if (letraAtual !== '' && letraAtual !== palavra[j]) {
-                    cabeECombina = false;
-                    break;
-                }
+                const letra = gradeMatematica[linhaStart][colunaStart + j];
+                if (letra !== '' && letra !== palavra[j]) { cabeECombina = false; break; }
             }
-            
-            // Se coube perfeitamente, escreve a palavra na grade
             if (cabeECombina) {
-                for (let j = 0; j < palavra.length; j++) {
-                    gradeMatematica[linhaStart][colunaStart + j] = palavra[j];
-                }
-                colocada = true;
-                break;
+                for (let j = 0; j < palavra.length; j++) gradeMatematica[linhaStart][colunaStart + j] = palavra[j];
+                colocada = true; break;
             }
-            
-        } else { // Vertical
-            // Verifica se a palavra cabe na coluna
+        } else {
             if (linhaStart + palavra.length > configJogo.linhas) continue;
-            
-            // Verifica colisões e cruzamentos perfeitos
             for (let j = 0; j < palavra.length; j++) {
-                const letraAtual = gradeMatematica[linhaStart + j][colunaStart];
-                if (letraAtual !== '' && letraAtual !== palavra[j]) {
-                    cabeECombina = false;
-                    break;
-                }
+                const letra = gradeMatematica[linhaStart + j][colunaStart];
+                if (letra !== '' && letra !== palavra[j]) { cabeECombina = false; break; }
             }
-            
-            // Se coube perfeitamente, escreve a palavra na grade
             if (cabeECombina) {
-                for (let j = 0; j < palavra.length; j++) {
-                    gradeMatematica[linhaStart + j][colunaStart] = palavra[j];
-                }
-                colocada = true;
-                break;
+                for (let j = 0; j < palavra.length; j++) gradeMatematica[linhaStart + j][colunaStart] = palavra[j];
+                colocada = true; break;
             }
         }
     }
-    
-    // Log de segurança caso a grade seja pequena demais para a palavra
-    if (!colocada) {
-        console.warn("Atenção: Não houve espaço para a palavra " + palavra);
-    }
 }
 
-// Funções de exportação seguras (A interface consome isso)
-function obterGrade() { return gradeMatematica; }
-function obterPalavras() { return configJogo.palavras; }
-function obterConfig() { return configJogo; }
+function avancarFaseMatematica() {
+    if (faseAtual < configJogo.fases.length - 1) {
+        faseAtual++;
+        inicializarMotor();
+        return true;
+    }
+    return false;
+}
 
-// Inicia o motor matemático assim que o arquivo é carregado
+// Exportações para o arquivo de Interação
+function obterGrade() { return gradeMatematica; }
+function obterPalavras() { return configJogo.fases[faseAtual]; }
+function obterConfig() { return configJogo; }
+function obterFaseNumero() { return faseAtual + 1; }
+
 inicializarMotor();
