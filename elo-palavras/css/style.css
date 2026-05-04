@@ -13,79 +13,54 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--cor-fundo); color: var(--texto-principal);
     display: flex; justify-content: center; align-items: center;
-    min-height: 100vh;
+    min-height: 100vh; overflow-x: hidden;
 }
 
 .glass-container {
     background: var(--vidro-fundo); backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px); border: 1px solid var(--vidro-borda);
     border-radius: 20px; padding: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-    width: 90%; max-width: 800px; display: flex; flex-direction: column; gap: 20px;
+    width: 90%; max-width: 450px; display: flex; flex-direction: column; gap: 20px;
 }
 
-.cabecalho-orbital { text-align: center; border-bottom: 2px solid var(--vidro-borda); padding-bottom: 10px; }
+.info-topo { display: flex; justify-content: space-between; align-items: center; }
+.status-jogo { display: flex; gap: 10px; }
+.badge { background: rgba(255,255,255,0.5); padding: 5px 12px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; }
+.moedas { color: #d97706; }
 
-.tabuleiro { display: grid; gap: 5px; justify-content: center; margin-top: 10px; }
+.tabuleiro { display: grid; gap: 5px; justify-content: center; }
 
 .celula {
-    width: 40px; height: 40px; background: var(--vidro-fundo);
+    width: 38px; height: 38px; background: var(--vidro-fundo);
     border: 1px solid var(--vidro-borda); border-radius: 8px;
     display: flex; justify-content: center; align-items: center;
-    font-weight: bold; font-size: 1.2rem; text-transform: uppercase;
-    cursor: pointer; transition: all 0.3s ease; user-select: none;
+    font-weight: bold; font-size: 1.1rem; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s ease;
 }
 
-/* Efeito de seleção amarela */
-.celula.selecionada { 
-    background: var(--destaque); 
-    box-shadow: 0 0 10px var(--destaque); 
-    transform: scale(1.05); 
-}
+.celula.selecionada { background: var(--destaque); transform: scale(1.1); z-index: 2; }
+.celula.encontrada { background: var(--sucesso); color: #000; border-color: #059669; }
 
-/* Efeito de acerto verde */
-.celula.encontrada { 
-    background: var(--sucesso); 
-    box-shadow: 0 0 10px var(--sucesso); 
-    border-color: #059669; 
-    color: #000; 
-    transform: scale(1.05); 
-    cursor: default; 
-}
-
-/* Animação de Erro (Tremer e ficar vermelho) */
 @keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); background: var(--erro); }
-    50% { transform: translateX(5px); background: var(--erro); }
-    75% { transform: translateX(-5px); background: var(--erro); }
-    100% { transform: translateX(0); }
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
 }
+.celula.erro { animation: shake 0.3s ease; background: var(--erro); color: white; }
 
-.celula.erro { 
-    animation: shake 0.4s ease; 
-    background: var(--erro); 
-    color: white; 
+.painel-vidro h3 { font-size: 1rem; margin-bottom: 10px; text-align: center; }
+#palavras-alvo { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+#palavras-alvo li { background: var(--vidro-fundo); padding: 4px 10px; border-radius: 10px; border: 1px solid var(--vidro-borda); font-size: 0.8rem; }
+#palavras-alvo li.riscada { text-decoration: line-through; opacity: 0.4; }
+
+/* Overlay de Vitória Estilo Apresentação */
+.luxury-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); display: flex; align-items: center;
+    justify-content: center; z-index: 9999; color: white; text-align: center;
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
 }
-
-.painel-vidro { text-align: center; }
-
-#palavras-alvo { 
-    list-style: none; padding: 0; 
-    display: flex; flex-wrap: wrap; 
-    gap: 10px; justify-content: center; 
-}
-
-#palavras-alvo li { 
-    background: var(--vidro-fundo); 
-    padding: 5px 15px; 
-    border-radius: 15px; 
-    border: 1px solid var(--vidro-borda); 
-    transition: all 0.3s ease; 
-}
-
-/* Efeito de palavra riscada */
-#palavras-alvo li.riscada { 
-    text-decoration: line-through; 
-    opacity: 0.5; 
-    background: transparent; 
-}
+.slide-vitoria h2 { font-size: 5rem; color: var(--destaque); margin: 0; opacity: 0.5; }
+.slide-vitoria h1 { letter-spacing: 4px; font-weight: 300; margin: 10px 0; text-transform: uppercase; }
+.slide-vitoria p { color: var(--sucesso); font-weight: bold; margin-bottom: 30px; letter-spacing: 1px; }
+.btn-next { background: none; border: 1px solid var(--destaque); color: white; padding: 12px 40px; border-radius: 50px; cursor: pointer; font-size: 1rem; letter-spacing: 2px; }
