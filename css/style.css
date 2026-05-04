@@ -1,0 +1,91 @@
+:root {
+    --cor-fundo: #f4f1ea; /* Tom claro e elegante */
+    --vidro-fundo: rgba(255, 255, 255, 0.4);
+    --vidro-borda: rgba(255, 255, 255, 0.6);
+    --texto-principal: #333333;
+    --destaque: #fcd34d; /* Amarelo inspirado nas suas notas */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--cor-fundo);
+    color: var(--texto-principal);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.glass-container {
+    background: var(--vidro-fundo);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--vidro-borda);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cabecalho-orbital {
+    text-align: center;
+    border-bottom: 2px solid var(--vidro-borda);
+    padding-bottom: 10px;
+}
+
+.tabuleiro {
+    display: grid;
+    gap: 5px;
+    justify-content: center;
+    /* O JS injetará as linhas e colunas sem quebrar o layout */
+}
+
+.celula {
+    width: 40px;
+    height: 40px;
+    background: var(--vidro-fundo);
+    border: 1px solid var(--vidro-borda);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Efeito ao selecionar uma letra no caça-palavras */
+.celula.selecionada {
+    background: var(--destaque);
+    box-shadow: 0 0 10px var(--destaque);
+    transform: scale(1.05);
+}
+
+.painel-vidro {
+    text-align: center;
+}
+
+#palavras-alvo {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+#palavras-alvo li {
+    background: var(--vidro-fundo);
+    padding: 5px 15px;
+    border-radius: 15px;
+    border: 1px solid var(--vidro-borda);
+}
+
