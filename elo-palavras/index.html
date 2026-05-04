@@ -8,27 +8,37 @@
     <link rel="manifest" href="manifest.json">
     
     <link rel="stylesheet" href="css/style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
     <main class="glass-container">
         <header class="cabecalho-orbital">
-            <h1>Elo Palavras</h1>
-            <p>Conecte os clássicos do entretenimento</p>
+            <div class="info-topo" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h1 style="margin: 0; font-size: 1.5rem;">Elo Palavras</h1>
+                
+                <div class="status-jogo" style="display: flex; gap: 10px;">
+                    <span id="nivel-display" style="background: rgba(255,255,255,0.3); padding: 5px 10px; border-radius: 10px; font-weight: bold;">Fase 1</span>
+                    <span style="background: rgba(255,255,255,0.3); padding: 5px 10px; border-radius: 10px; font-weight: bold; color: #d97706;">
+                        🪙 <span id="moedas-valor">10</span>
+                    </span>
+                </div>
+            </div>
+            <p style="margin: 0; opacity: 0.8;">Conecte os clássicos do entretenimento</p>
         </header>
 
         <section id="tabuleiro-grid" class="tabuleiro">
             </section>
 
         <aside id="lista-palavras" class="painel-vidro">
-            <h3>Palavras a Encontrar</h3>
+            <h3 style="margin-bottom: 10px;">Palavras a Encontrar</h3>
             <ul id="palavras-alvo">
                 </ul>
         </aside>
     </main>
 
     <script src="js/motor-encaixe.js"></script>
-    
     <script src="js/interacao.js"></script>
 </body>
 </html>
