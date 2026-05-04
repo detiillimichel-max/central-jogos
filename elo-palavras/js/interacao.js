@@ -1,14 +1,13 @@
-// interacao.js
+// interacao.js - Versão "Luxury Presentation"
 document.addEventListener("DOMContentLoaded", () => {
-    let moedas = 10; 
+    let moedas = 10;
     let palavrasNaoEncontradas = [];
-    let letrasSelecionadas = []; 
+    let letrasSelecionadas = [];
 
     function renderizarJogo() {
         const gridVisual = document.getElementById("tabuleiro-grid");
         const listaVisual = document.getElementById("palavras-alvo");
         
-        // Limpa a tela para a nova fase
         gridVisual.innerHTML = "";
         listaVisual.innerHTML = "";
         letrasSelecionadas = [];
@@ -18,36 +17,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const palavras = obterPalavras();
         palavrasNaoEncontradas = [...palavras];
         
-        // Atualiza o topo: Fase e Moedas
-        document.getElementById("nivel-display").textContent = "Fase " + obterFaseNumero();
+        document.getElementById("nivel-display").textContent = "Nível " + obterFaseNumero();
         atualizarPlacarMoedas();
 
         gridVisual.style.gridTemplateColumns = `repeat(${config.colunas}, 40px)`;
 
-        // Cria o tabuleiro
         for (let l = 0; l < config.linhas; l++) {
             for (let c = 0; c < config.colunas; c++) {
                 const celula = document.createElement("div");
                 celula.className = "celula";
                 celula.textContent = gradeMatematica[l][c];
-                
-                celula.addEventListener("click", () => {
-                    if (celula.classList.contains("encontrada")) return;
-
-                    if (celula.classList.contains("selecionada")) {
-                        celula.classList.remove("selecionada");
-                        letrasSelecionadas = letrasSelecionadas.filter(el => el !== celula);
-                    } else {
-                        celula.classList.add("selecionada");
-                        letrasSelecionadas.push(celula);
-                        verificarJogada(); 
-                    }
-                });
+                celula.addEventListener("click", () => selecionarLetra(celula));
                 gridVisual.appendChild(celula);
             }
         }
 
-        // Cria a lista de palavras
         palavras.forEach(palavra => {
             const li = document.createElement("li");
             li.textContent = palavra;
@@ -55,76 +39,72 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function selecionarLetra(celula) {
+        if (celula.classList.contains("encontrada")) return;
+        celula.classList.toggle("selecionada");
+        
+        if (celula.classList.contains("selecionada")) {
+            letrasSelecionadas.push(celula);
+        } else {
+            letrasSelecionadas = letrasSelecionadas.filter(el => el !== celula);
+        }
+        verificarJogada();
+    }
+
     function atualizarPlacarMoedas() {
-        document.getElementById("moedas-valor").textContent = moedas;
+        const el = document.getElementById("moedas-valor");
+        el.style.transform = "scale(1.5)";
+        el.textContent = moedas;
+        setTimeout(() => el.style.transform = "scale(1)", 200);
+    }
+
+    // TELA DE VITÓRIA ESTILO "IMAGEM 3"
+    function mostrarTelaVitoria() {
+        const overlay = document.createElement("div");
+        overlay.className = "luxury-overlay";
+        overlay.innerHTML = `
+            <div class="slide-vitoria">
+                <h2 style="color: #fcd34d; font-size: 3rem;">0${obterFaseNumero()}</h2>
+                <h1 style="letter-spacing: 5px;">FASE CONCLUÍDA</h1>
+                <p>O SEU PROGRESSO É MONITORADO</p>
+                <div class="moedas-ganhas">🪙 +5 CRÉDITOS</div>
+                <button onclick="this.parentElement.parentElement.remove()" id="btn-proxima">CONTINUAR</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        document.getElementById("btn-proxima").addEventListener("click", () => {
+            const proxima = avancarFaseMatematica();
+            if (proxima) renderizarJogo();
+            else alert("VOCÊ É UM MESTRE!");
+        });
     }
 
     function verificarJogada() {
         const formada = letrasSelecionadas.map(el => el.textContent).join('');
         const invertida = formada.split('').reverse().join('');
-
-        let acertou = null;
-        if (palavrasNaoEncontradas.includes(formada)) acertou = formada;
-        else if (palavrasNaoEncontradas.includes(invertida)) acertou = invertida;
+        let acertou = palavrasNaoEncontradas.includes(formada) ? formada : (palavrasNaoEncontradas.includes(invertida) ? invertida : null);
 
         if (acertou) {
-            // SUCESSO: Letras ficam verdes
             letrasSelecionadas.forEach(el => {
-                el.classList.remove("selecionada");
-                el.classList.add("encontrada");
+                el.classList.replace("selecionada", "encontrada");
             });
-            letrasSelecionadas = []; 
-
-            // Risca na lista
             const itens = document.querySelectorAll("#palavras-alvo li");
             itens.forEach(li => { if (li.textContent === acertou) li.classList.add("riscada"); });
-
+            
             palavrasNaoEncontradas = palavrasNaoEncontradas.filter(p => p !== acertou);
-
-            // VITÓRIA NA FASE
-            if (palavrasNaoEncontradas.length === 0) {
-                if (typeof confetti === 'function') {
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                }
-                
-                moedas += 5; // Bônus por fase
-                
-                setTimeout(() => {
-                    const proxima = avancarFaseMatematica();
-                    if (proxima) {
-                        alert("Fase Concluída! +5 Moedas 🪙");
-                        renderizarJogo();
-                    } else {
-                        alert("🏆 INCRÍVEL! Você completou as 10 fases!");
-                    }
-                }, 1500);
-            }
-            return;
-        }
-
-        // LÓGICA DE ERRO: Se a seleção não for caminho para nenhuma palavra
-        const possivel = palavrasNaoEncontradas.some(p => p.startsWith(formada) || p.startsWith(invertida));
-
-        if (!possivel && formada.length > 1) {
-            moedas -= 1; // Gasta moeda no erro
-            atualizarPlacarMoedas();
-            
-            letrasSelecionadas.forEach(el => {
-                el.classList.remove("selecionada");
-                el.classList.add("erro");
-            });
-            
-            const temporario = [...letrasSelecionadas];
             letrasSelecionadas = [];
-            
-            setTimeout(() => {
-                temporario.forEach(el => el.classList.remove("erro"));
-            }, 400);
 
-            if (moedas <= 0) {
-                alert("Game Over! Suas moedas acabaram.");
-                location.reload(); 
+            if (palavrasNaoEncontradas.length === 0) {
+                moedas += 5;
+                if (typeof confetti === 'function') confetti({ particleCount: 200, spread: 100 });
+                setTimeout(mostrarTelaVitoria, 500);
             }
+        }
+        // Lógica de erro simplificada para não travar no mobile
+        else if (letrasSelecionadas.length > 8) { 
+             letrasSelecionadas.forEach(el => el.classList.remove("selecionada"));
+             letrasSelecionadas = [];
         }
     }
 
