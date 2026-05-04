@@ -1,0 +1,15 @@
+{
+  "name": "Elo Palavras - Cine Nostalgia",
+  "short_name": "Elo Palavras",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f1ea",
+  "theme_color": "#fcd34d",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
